@@ -78,10 +78,12 @@ class DashboardActivity : AppCompatActivity() {
             holder.fridgeExpirationAt.text = expirationAt
 
             val remainDay = (Date().time-dateToString.time) / (1000*60*60*24)
-            if(remainDay >= 0)
-                holder.fridgeRemain.text = remainDay.toString()+"일 남음"
-            else
-                holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+
+            when {
+                remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
+                remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+                remainDay.equals(0)  -> holder.fridgeRemain.text = "오늘 까지"
+            }
         }
 
         class ViewHolder(v : View) : RecyclerView.ViewHolder(v){
