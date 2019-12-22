@@ -78,7 +78,7 @@ class DashboardActivity : AppCompatActivity() {
             when {
                 remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
                 remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
-                else  -> holder.fridgeRemain.text = "오늘 까지"
+                else  -> holder.fridgeRemain.text = "오늘까지"
             }
         }
 
