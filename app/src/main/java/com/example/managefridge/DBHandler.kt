@@ -6,15 +6,16 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.managefridge.DTO.Fridge
+import kotlin.time.days
 
 class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION){
     override fun onCreate(db: SQLiteDatabase){
         val createFridgeTable : String = " CREATE TABLE FRIDGE (" +
                 "$COL_ID integer PRIMARY KEY AUTOINCREMENT," +
                 "$COL_NAME varchar," +
-                "$COL_CREATED_AT datetime DEFAULT CURRENT_TIMESTAMP);"
-                //"$COL_EXPIRATION_AT datetime," +
-                //"$COL_WARNING_AT datetime);"
+                "$COL_CREATED_AT datetime DEFAULT CURRENT_TIMESTAMP,"+
+                "$COL_EXPIRATION_AT datetime DEFAULT CURRENT_TIMESTAMP," +
+                "$COL_WARNING_AT datetime DEFAULT CURRENT_TIMESTAMP);"
         db.execSQL(createFridgeTable)
     }
 
@@ -38,8 +39,8 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 food.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
                 food.itemName = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
                 food.createdAt = queryResult.getString(queryResult.getColumnIndex(COL_CREATED_AT))
-                //food.expirationAt = queryResult.getString(queryResult.getColumnIndex(COL_EXPIRATION_AT))
-                //food.warningAt = queryResult.getString(queryResult.getColumnIndex(COL_WARNING_AT))
+                food.expirationAt = queryResult.getString(queryResult.getColumnIndex(COL_EXPIRATION_AT))
+                food.warningAt = queryResult.getString(queryResult.getColumnIndex(COL_WARNING_AT))
 
                 result.add(food)
             } while (queryResult.moveToNext())

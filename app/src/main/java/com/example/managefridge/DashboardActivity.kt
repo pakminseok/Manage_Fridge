@@ -13,6 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_dashboard.*
+import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -22,7 +28,6 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
         setSupportActionBar(dashboard_toolbar)
-        title = "냉장고 상태"
         dbHandler = DBHandler(this)
         rv_dashboard.layoutManager = LinearLayoutManager(this)
 
@@ -36,6 +41,7 @@ class DashboardActivity : AppCompatActivity() {
                     val food = Fridge()
                     food.itemName = foodName.text.toString()
                     dbHandler.addFridge(food)
+                    refreshList()
                 }
             }
             dialog.setNegativeButton("Cancel") { DialogInterface, Int ->
@@ -66,10 +72,22 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.fridgeName.text = list[position].itemName
+
+            val dateToString = SimpleDateFormat("yyyy-MM-dd").parse((list[position].expirationAt).toString())
+            val expirationAt = SimpleDateFormat("yyyy년MM월dd일").format(dateToString)
+            holder.fridgeExpirationAt.text = expirationAt
+
+            val remainDay = (Date().time-dateToString.time) / (1000*60*60*24)
+            if(remainDay >= 0)
+                holder.fridgeRemain.text = remainDay.toString()+"일 남음"
+            else
+                holder.fridgeRemain.text = remainDay.toString()+"일 지남"
         }
 
         class ViewHolder(v : View) : RecyclerView.ViewHolder(v){
             val fridgeName : TextView = v.findViewById(R.id.tv_item_of_fridge)
+            val fridgeExpirationAt : TextView = v.findViewById(R.id.tv_expiration_fridge)
+            val fridgeRemain : TextView = v.findViewById(R.id.tv_remain)
         }
     }
 }

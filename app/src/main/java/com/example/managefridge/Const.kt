@@ -12,6 +12,6 @@ const val COL_NAME = "itemName"
 /*냉장고 보관날짜(시작날짜)*/
 const val COL_CREATED_AT = "createdAt"
 /*유통기한*/
-//const val COL_EXPIRATION_AT = "expirationAt"
+const val COL_EXPIRATION_AT = "expirationAt"
 /*유통기한 며칠 전에 경고할지 설정*/
-//const val COL_WARNING_AT = "warningAt"
+const val COL_WARNING_AT = "warningAt"
