@@ -8,11 +8,14 @@
     tools:context=".DashboardActivity">
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/dashboard_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:actionBarSize"
-        android:background="@color/colorPrimaryDark"/>
+        android:background="@color/colorPrimaryDark"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/dashboard_toolbar"
         android:id = "@+id/rv_dashboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
