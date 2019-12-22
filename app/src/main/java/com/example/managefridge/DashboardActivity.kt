@@ -14,10 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DashboardActivity : AppCompatActivity() {
