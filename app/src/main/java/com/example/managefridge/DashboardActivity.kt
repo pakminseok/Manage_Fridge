@@ -76,8 +76,13 @@ class DashboardActivity : AppCompatActivity() {
             val remainDay = (Date().time-dateToString.time) / (1000*60*60*24)
 
             when {
+<<<<<<< HEAD
                 remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
                 remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+=======
+                remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
+                remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+>>>>>>> fb15a707b721c826bf218952a53bd538ec17f2d3
                 else  -> holder.fridgeRemain.text = "오늘까지"
             }
         }
