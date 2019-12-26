@@ -14,10 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DashboardActivity : AppCompatActivity() {
@@ -80,9 +76,9 @@ class DashboardActivity : AppCompatActivity() {
             val remainDay = (Date().time-dateToString.time) / (1000*60*60*24)
 
             when {
-                remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
-                remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
-                else  -> holder.fridgeRemain.text = "오늘 까지"
+                remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
+                remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+                else  -> holder.fridgeRemain.text = "오늘까지"
             }
         }
 
