@@ -1,12 +1,13 @@
 package com.example.managefridge
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,7 +33,7 @@ class DashboardActivity : AppCompatActivity() {
             val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val foodName = view.findViewById<EditText>(R.id.ev_fridge)
             dialog.setView(view)
-            dialog.setPositiveButton("Add") { DialogInterface, Int ->
+            dialog.setPositiveButton("추가") { DialogInterface, Int ->
                 if (foodName.text.isNotEmpty()) {
                     val food = Fridge()
                     food.itemName = foodName.text.toString()
@@ -40,14 +41,33 @@ class DashboardActivity : AppCompatActivity() {
                     refreshList()
                 }
             }
-            dialog.setNegativeButton("Cancel") { DialogInterface, Int ->
+            dialog.setNegativeButton("취소") { DialogInterface, Int ->
 
             }
             dialog.show()
         }
 
     }
+    fun updateFridge(fridge : Fridge){
+        val dialog = AlertDialog.Builder(this)
+        dialog.setTitle("수정하기")
+        val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
+        val foodName = view.findViewById<EditText>(R.id.ev_fridge)
+        foodName.setText(fridge.itemName)
+        dialog.setView(view)
+        dialog.setPositiveButton("수정완료") { DialogInterface, Int ->
+            if (foodName.text.isNotEmpty()) {
+                fridge.itemName = foodName.text.toString()
+                dbHandler.updateFridge(fridge)
+                refreshList()
+            }
+        }
+        dialog.setNegativeButton("취소") { DialogInterface, Int ->
 
+        }
+        dialog.show()
+
+    }
     override fun onResume(){
         refreshList()
         super.onResume()
@@ -57,9 +77,9 @@ class DashboardActivity : AppCompatActivity() {
         rv_dashboard.adapter = DashboardAdapter(this, dbHandler.getFridge())
     }
 
-    class DashboardAdapter(val context : Context, val list : MutableList<Fridge>) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(){
+    class DashboardAdapter(val activity : DashboardActivity, val list : MutableList<Fridge>) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(){
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(LayoutInflater.from(context).inflate(R.layout.show_list_fridge, parent, false))
+            return ViewHolder(LayoutInflater.from(activity).inflate(R.layout.show_list_fridge, parent, false))
         }
 
         override fun getItemCount(): Int {
@@ -76,21 +96,50 @@ class DashboardActivity : AppCompatActivity() {
             val remainDay = (Date().time-dateToString.time) / (1000*60*60*24)
 
             when {
-<<<<<<< HEAD
                 remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
                 remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
-=======
-                remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
-                remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
->>>>>>> fb15a707b721c826bf218952a53bd538ec17f2d3
                 else  -> holder.fridgeRemain.text = "오늘까지"
             }
+
+            //click menu
+            holder.menu.setOnClickListener{
+                val popup = PopupMenu(activity, holder.menu)
+                popup.inflate(R.menu.dashboard_child)
+                popup.setOnMenuItemClickListener {
+
+                    when(it.itemId)
+                    {
+                        R.id.menu_edit -> {
+                            activity.updateFridge(list[position])
+                        }
+                        R.id.menu_delete->{
+                            val dialog = AlertDialog.Builder(activity)
+                            dialog.setTitle("삭제하기")
+                            dialog.setMessage("정말로 삭제하시겠습니까?")
+                            dialog.setPositiveButton("네, 삭제할래요") { DialogInterface, Int ->
+                                activity.dbHandler.deleteFridge(list[position].id)
+                                activity.refreshList()
+                            }
+                            dialog.setNegativeButton("아니오") { DialogInterface, Int ->
+
+                            }
+                            dialog.show()
+                        }
+                    }
+                    true
+                }
+                popup.show()
+            }
+
+
         }
 
         class ViewHolder(v : View) : RecyclerView.ViewHolder(v){
             val fridgeName : TextView = v.findViewById(R.id.tv_item_of_fridge)
             val fridgeExpirationAt : TextView = v.findViewById(R.id.tv_expiration_fridge)
             val fridgeRemain : TextView = v.findViewById(R.id.tv_remain)
+
+            val menu : ImageView = v.findViewById(R.id.iv_menu)
         }
     }
 }

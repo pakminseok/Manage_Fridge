@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ManageFridge</string>
+
+    <string name="edit">수정</string>
+    <string name="delete">삭제</string>
+
 </resources>
