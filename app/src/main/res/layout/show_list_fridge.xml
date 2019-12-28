@@ -30,10 +30,10 @@
 
     <TextView
         android:text="유통 기한: "
-        android:textSize="25dp"
+        android:textSize="23dp"
         android:layout_below="@id/iv_menu"
         android:id="@+id/header_expiration_at"
-        android:layout_width="110dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"/>
 
     <TextView
@@ -43,14 +43,14 @@
         android:layout_below="@id/iv_menu"
         android:layout_toRightOf="@id/header_expiration_at"
         android:textAlignment="center"
-        android:textSize="25dp"/>
+        android:textSize="23dp"/>
 
     <TextView
         android:text="남은 날짜: "
-        android:textSize="25dp"
+        android:textSize="23dp"
         android:layout_below="@id/header_expiration_at"
         android:id="@+id/header_remain_day"
-        android:layout_width="110dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"/>
 
     <TextView
@@ -60,7 +60,7 @@
         android:layout_below="@id/tv_expiration_fridge"
         android:layout_toRightOf="@id/header_remain_day"
         android:textAlignment="center"
-        android:textSize="25dp"/>
+        android:textSize="23dp"/>
 
 
 </RelativeLayout>

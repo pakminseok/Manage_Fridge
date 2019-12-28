@@ -5,10 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +12,10 @@ import com.example.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import java.text.SimpleDateFormat
 import java.util.*
+import android.app.DatePickerDialog
+import android.graphics.Color
+import android.text.format.DateFormat
+import android.widget.*
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -30,13 +30,34 @@ class DashboardActivity : AppCompatActivity() {
 
         fab_dashboard.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
+            dialog.setTitle("냉장고에 넣기")
             val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val foodName = view.findViewById<EditText>(R.id.ev_fridge)
+            val expirationAt = view.findViewById<TextView>(R.id.tv_expiration_at)
+
             dialog.setView(view)
+
+            expirationAt.setOnClickListener {
+                val c = Calendar.getInstance()
+                val year = c.get(Calendar.YEAR)
+                val month = c.get(Calendar.MONTH)
+                val day = c.get(Calendar.DAY_OF_MONTH)
+
+                val dateListener = object : DatePickerDialog.OnDateSetListener {
+                    override fun onDateSet(view : DatePicker?, year : Int, month : Int, dayOfMonth : Int) {
+                        val expAt = SimpleDateFormat("yyyy-MM-dd").parse("${year}-${month+1}-${dayOfMonth}")
+                        expirationAt.setText(SimpleDateFormat("yyyy-MM-dd").format(expAt).toString())
+                    }
+                }
+                val builder = DatePickerDialog(this, dateListener, year, month, day)
+                builder.show()
+            }
+
             dialog.setPositiveButton("추가") { DialogInterface, Int ->
-                if (foodName.text.isNotEmpty()) {
+                if (foodName.text.isNotEmpty() && expirationAt.text.isNotEmpty()) {
                     val food = Fridge()
                     food.itemName = foodName.text.toString()
+                    food.expirationAt = expirationAt.text.toString()
                     dbHandler.addFridge(food)
                     refreshList()
                 }
@@ -48,16 +69,37 @@ class DashboardActivity : AppCompatActivity() {
         }
 
     }
+
     fun updateFridge(fridge : Fridge){
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("수정하기")
         val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
         val foodName = view.findViewById<EditText>(R.id.ev_fridge)
+        val expirationAt = view.findViewById<TextView>(R.id.tv_expiration_at)
         foodName.setText(fridge.itemName)
+        expirationAt.setText(fridge.expirationAt)
         dialog.setView(view)
+
+        expirationAt.setOnClickListener {
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+
+            val dateListener = object : DatePickerDialog.OnDateSetListener {
+                override fun onDateSet(view : DatePicker?, year : Int, month : Int, dayOfMonth : Int) {
+                    val expAt = SimpleDateFormat("yyyy-MM-dd").parse("${year}-${month+1}-${dayOfMonth}")
+                    expirationAt.setText(SimpleDateFormat("yyyy-MM-dd").format(expAt).toString())
+                }
+            }
+            val builder = DatePickerDialog(this, dateListener, year, month, day)
+            builder.show()
+        }
+
         dialog.setPositiveButton("수정완료") { DialogInterface, Int ->
-            if (foodName.text.isNotEmpty()) {
+            if (foodName.text.isNotEmpty() && expirationAt.text.isNotEmpty()) {
                 fridge.itemName = foodName.text.toString()
+                fridge.expirationAt = expirationAt.text.toString()
                 dbHandler.updateFridge(fridge)
                 refreshList()
             }
@@ -89,16 +131,35 @@ class DashboardActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.fridgeName.text = list[position].itemName
 
-            val dateToString = SimpleDateFormat("yyyy-MM-dd").parse((list[position].expirationAt).toString())
-            val expirationAt = SimpleDateFormat("yyyy년MM월dd일").format(dateToString)
+            val expirationDate = SimpleDateFormat("yyyy-MM-dd").parse(list[position].expirationAt)
+            val expirationAt = SimpleDateFormat("yyyy년MM월dd일").format(expirationDate)
+
             holder.fridgeExpirationAt.text = expirationAt
 
-            val remainDay = (Date().time-dateToString.time) / (1000*60*60*24)
+            val remainDay = (Date().time-expirationDate.time) / (1000*60*60*24)
 
             when {
-                remainDay < 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 남음"
-                remainDay > 0 -> holder.fridgeRemain.text = remainDay.toString()+"일 지남"
-                else  -> holder.fridgeRemain.text = "오늘까지"
+                remainDay < 0 -> {
+                    val absRemainDay = -remainDay
+                    if (absRemainDay <= 3)
+                    {
+                        holder.itemView.setBackgroundColor(Color.rgb(169,16,22))
+                        holder.fridgeRemain.text = absRemainDay.toString()+"일 남음"
+                    }
+                    else
+                    {
+                        holder.itemView.setBackgroundColor(Color.rgb(255,255,255))
+                        holder.fridgeRemain.text = absRemainDay.toString()+"일 남음"
+                    }
+                }
+                remainDay > 0 -> {
+                    holder.itemView.setBackgroundColor(Color.rgb(36,36,36))
+                    holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+                }
+                else  -> {
+                    holder.itemView.setBackgroundColor(Color.rgb(169,16,22))
+                    holder.fridgeRemain.text = "오늘까지"
+                }
             }
 
             //click menu

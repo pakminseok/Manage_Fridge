@@ -5,5 +5,4 @@ class Fridge{
     var itemName = ""
     var createdAt = ""
     var expirationAt = ""
-    var warningAt = ""
 }

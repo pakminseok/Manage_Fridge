@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.managefridge.DTO.Fridge
+import kotlin.collections.ArrayList
 
 class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION){
     override fun onCreate(db: SQLiteDatabase){
@@ -13,8 +14,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 "$COL_ID integer PRIMARY KEY AUTOINCREMENT," +
                 "$COL_NAME varchar," +
                 "$COL_CREATED_AT datetime DEFAULT CURRENT_TIMESTAMP,"+
-                "$COL_EXPIRATION_AT datetime DEFAULT CURRENT_TIMESTAMP," +
-                "$COL_WARNING_AT datetime DEFAULT CURRENT_TIMESTAMP);"
+                "$COL_EXPIRATION_AT datetime);"
         db.execSQL(createFridgeTable)
     }
 
@@ -25,6 +25,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         val db : SQLiteDatabase = writableDatabase
         val cv = ContentValues()
         cv.put(COL_NAME, fridge.itemName)
+        cv.put(COL_EXPIRATION_AT, fridge.expirationAt)
         val result : Long = db.insert(TABLE_FRIDGE, null, cv)
         return result != (-1).toLong()
     }
@@ -33,6 +34,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         val db : SQLiteDatabase = writableDatabase
         val cv = ContentValues()
         cv.put(COL_NAME, fridge.itemName)
+        cv.put(COL_EXPIRATION_AT, fridge.expirationAt)
         db.update(TABLE_FRIDGE, cv, "$COL_ID=?", arrayOf(fridge.id.toString()))
     }
 
@@ -45,7 +47,7 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
     fun getFridge() : MutableList<Fridge> {
         val result : MutableList<Fridge> = ArrayList()
         val db : SQLiteDatabase = readableDatabase
-        val queryResult : Cursor = db.rawQuery("SELECT * FROM $TABLE_FRIDGE ORDER BY $COL_EXPIRATION_AT", null)
+        val queryResult : Cursor = db.rawQuery("SELECT * FROM $TABLE_FRIDGE ORDER BY $COL_EXPIRATION_AT asc", null)
         if(queryResult.moveToFirst()){
             do {
                 val food = Fridge()
@@ -53,7 +55,6 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 food.itemName = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
                 food.createdAt = queryResult.getString(queryResult.getColumnIndex(COL_CREATED_AT))
                 food.expirationAt = queryResult.getString(queryResult.getColumnIndex(COL_EXPIRATION_AT))
-                food.warningAt = queryResult.getString(queryResult.getColumnIndex(COL_WARNING_AT))
 
                 result.add(food)
             } while (queryResult.moveToNext())
