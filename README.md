@@ -4,15 +4,15 @@ ToDo앱 기반.
 
 ![initial](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/requirement.JPG)
 
-1. 시작 화면\n
+1. 시작 화면  
 -아이콘이 나왔다가 사라지면서 앱이 시작함
 ![FirstScreen](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/FirstScreen.jpg)
 
-2. 냉장고에 넣은 식품을 보여줌\n
--식품명 / 유통기한 / 유통기한까지 남은 일자를 볼 수 있다. \n
--유통기한까지 남은 일자가 3일 이내인 경우 -> 배경색 = 빨강색 \n
--유통기한이 지난 식품-> 배경색 = 회색\n
--나머지 식품-> 배경색 = 흰색 \n
+2. 냉장고에 넣은 식품을 보여줌  
+-식품명 / 유통기한 / 유통기한까지 남은 일자를 볼 수 있다.  
+-유통기한까지 남은 일자가 3일 이내인 경우 -> 배경색 = 빨강색  
+-유통기한이 지난 식품-> 배경색 = 회색  
+-나머지 식품-> 배경색 = 흰색  
 -유통기한 임박한 순서대로 위->아래로 정렬해서 표시됨(유통기한 지난 것이 우선순위가  높음)
 
 ![ShowList1](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/ShowList1.jpg)
