@@ -6,4 +6,4 @@ ToDo앱 기반.
 
 1. 시작 화면
 -아이콘이 나왔다가 사라지면서 앱이 시작함
-![FirstScreen](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/FirstScreen.JPG)
+![FirstScreen](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/FirstScreen.jpg)
