@@ -37,6 +37,6 @@ ToDo앱 기반.
 ![edit](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/EditItem.jpg)
 
 6. 삭제하기  
--메뉴 - 삭제를 누르면, 정말로 삭제할 지 한 번더 메시지를 보여준다.
--"네 삭제할래요"를 누르면 삭제, "아니오"를 누르면 작업 취소다.
+-메뉴 - 삭제를 누르면, 정말로 삭제할 지 한 번더 메시지를 보여준다.  
+-"네 삭제할래요"를 누르면 삭제, "아니오"를 누르면 작업 취소다.  
 ![delete](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DeleteItem.jpg)
