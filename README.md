@@ -45,7 +45,7 @@ ToDo앱 기반.
 ![delete](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DeleteItem.jpg)
 
 7. 캘린더 모드  
--하단 네비 버튼 중 "일자별 보기"를 선택하면, 달력이 나온다.
--달력에 원하는 일자를 선택한다.
+-하단 네비 버튼 중 "일자별 보기"를 선택하면, 달력이 나온다.  
+-달력에 원하는 일자를 선택한다.  
 -해당 일자에 유통기한인 식품들의 리스트를 볼 수 있다.(특정 일자의 식품만 보기)  
 ![calendarmode](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/CalendarView.png)
