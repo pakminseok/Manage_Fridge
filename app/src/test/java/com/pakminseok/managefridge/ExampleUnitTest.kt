@@ -1,4 +1,4 @@
-package com.firstapp.managefridge
+package com.pakminseok.managefridge
 
 import org.junit.Test
 

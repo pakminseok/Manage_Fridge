@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.firstapp.managefridge">
+    package="com.pakminseok.managefridge">
 
     <application
         android:allowBackup="true"
@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_foreground_fridge"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.firstapp.managefridge.DashboardActivity"></activity>
-        <activity android:name="com.firstapp.managefridge.MainActivity">
+        <activity android:name="com.pakminseok.managefridge.DashboardActivity"></activity>
+        <activity android:name="com.pakminseok.managefridge.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

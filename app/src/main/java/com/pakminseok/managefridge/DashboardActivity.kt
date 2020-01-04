@@ -1,4 +1,4 @@
-package com.firstapp.managefridge
+package com.pakminseok.managefridge
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.firstapp.managefridge.DTO.Fridge
+import com.pakminseok.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import java.text.SimpleDateFormat
 import java.util.*

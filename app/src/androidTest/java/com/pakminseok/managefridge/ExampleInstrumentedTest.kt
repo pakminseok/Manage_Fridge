@@ -1,4 +1,4 @@
-package com.firstapp.managefridge
+package com.pakminseok.managefridge
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,4 +1,4 @@
-package com.firstapp.managefridge
+package com.pakminseok.managefridge
 
 const val DB_NAME = "Fridge"
 const val DB_VERSION = 1
