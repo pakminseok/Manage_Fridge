@@ -1,4 +1,4 @@
-package com.example.managefridge
+package com.firstapp.managefridge
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.managefridge.DTO.Fridge
+import com.firstapp.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import java.text.SimpleDateFormat
 import java.util.*
 import android.app.DatePickerDialog
 import android.graphics.Color
-import android.text.format.DateFormat
 import android.widget.*
 
 class DashboardActivity : AppCompatActivity() {

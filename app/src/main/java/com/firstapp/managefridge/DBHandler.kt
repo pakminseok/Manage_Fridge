@@ -1,11 +1,11 @@
-package com.example.managefridge
+package com.firstapp.managefridge
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.managefridge.DTO.Fridge
+import com.firstapp.managefridge.DTO.Fridge
 import kotlin.collections.ArrayList
 
 class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION){

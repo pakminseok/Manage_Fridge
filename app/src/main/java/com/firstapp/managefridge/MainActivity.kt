@@ -1,4 +1,4 @@
-package com.example.managefridge
+package com.firstapp.managefridge
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

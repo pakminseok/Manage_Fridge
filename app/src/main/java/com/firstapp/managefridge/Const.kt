@@ -1,6 +1,4 @@
-package com.example.managefridge
-
-import android.os.FileObserver.CREATE
+package com.firstapp.managefridge
 
 const val DB_NAME = "Fridge"
 const val DB_VERSION = 1

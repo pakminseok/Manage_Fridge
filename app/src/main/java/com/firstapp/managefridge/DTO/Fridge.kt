@@ -1,4 +1,4 @@
-package com.example.managefridge.DTO
+package com.firstapp.managefridge.DTO
 
 class Fridge{
     var id : Long = -1

@@ -1,4 +1,4 @@
-package com.example.managefridge
+package com.firstapp.managefridge
 
 import org.junit.Test
 
