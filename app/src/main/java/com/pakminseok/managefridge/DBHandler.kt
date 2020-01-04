@@ -5,7 +5,11 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.pakminseok.managefridge.DTO.Fridge
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.collections.ArrayList
 
 class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION){
@@ -55,7 +59,25 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
                 food.itemName = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
                 food.createdAt = queryResult.getString(queryResult.getColumnIndex(COL_CREATED_AT))
                 food.expirationAt = queryResult.getString(queryResult.getColumnIndex(COL_EXPIRATION_AT))
+                result.add(food)
+            } while (queryResult.moveToNext())
+        }
+        queryResult.close()
+        return result
+    }
 
+    fun getFridgeDaybyDay(day: String) : MutableList<Fridge> {
+        Log.d("날짜", day)
+        val result : MutableList<Fridge> = ArrayList()
+        val db : SQLiteDatabase = readableDatabase
+        val queryResult : Cursor = db.rawQuery("SELECT * FROM $TABLE_FRIDGE WHERE $COL_EXPIRATION_AT = ? ORDER BY $COL_CREATED_AT asc", arrayOf(day))
+        if(queryResult.moveToFirst()){
+            do {
+                val food = Fridge()
+                food.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
+                food.itemName = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
+                food.createdAt = queryResult.getString(queryResult.getColumnIndex(COL_CREATED_AT))
+                food.expirationAt = queryResult.getString(queryResult.getColumnIndex(COL_EXPIRATION_AT))
                 result.add(food)
             } while (queryResult.moveToNext())
         }

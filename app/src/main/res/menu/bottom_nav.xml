@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="전체 목록"
+        android:icon="@drawable/ic_action_home"
+        />
+    <item
+        android:id="@+id/calendar"
+        android:title="달력 모드"
+        android:icon="@drawable/ic_action_calendar"
+    />
+
+</menu>

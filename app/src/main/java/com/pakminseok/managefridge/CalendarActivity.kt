@@ -1,86 +1,75 @@
 package com.pakminseok.managefridge
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.DatePickerDialog
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pakminseok.managefridge.DTO.Fridge
-import kotlinx.android.synthetic.main.activity_dashboard.*
+import kotlinx.android.synthetic.main.activity_calendar.*
 import java.text.SimpleDateFormat
 import java.util.*
-import android.app.DatePickerDialog
-import android.content.Intent
-import android.graphics.Color
-import android.widget.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class DashboardActivity : AppCompatActivity() {
-
+class CalendarActivity : AppCompatActivity()
+{
     lateinit var dbHandler: DBHandler
+    lateinit var mCalendarView : CalendarView
+    var viewat : String = SimpleDateFormat("yyyy-MM-dd").format(Date())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
-        setSupportActionBar(dashboard_toolbar)
+        setContentView(R.layout.activity_calendar)
+        setSupportActionBar(calendar_toolbar)
         dbHandler = DBHandler(this)
-        rv_dashboard.layoutManager = LinearLayoutManager(this)
 
-        fab_dashboard.setOnClickListener {
-            val dialog = AlertDialog.Builder(this)
-            dialog.setTitle("냉장고에 넣기")
-            val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
-            val foodName = view.findViewById<EditText>(R.id.ev_fridge)
-            val expirationAt = view.findViewById<TextView>(R.id.tv_expiration_at)
-
-            dialog.setView(view)
-
-            expirationAt.setOnClickListener {
-                val c = Calendar.getInstance()
-                val year = c.get(Calendar.YEAR)
-                val month = c.get(Calendar.MONTH)
-                val day = c.get(Calendar.DAY_OF_MONTH)
-
-                val dateListener = object : DatePickerDialog.OnDateSetListener {
-                    override fun onDateSet(view : DatePicker?, year : Int, month : Int, dayOfMonth : Int) {
-                        val expAt = SimpleDateFormat("yyyy-MM-dd").parse("${year}-${month+1}-${dayOfMonth}")
-                        expirationAt.setText(SimpleDateFormat("yyyy-MM-dd").format(expAt).toString())
-                    }
-                }
-                val builder = DatePickerDialog(this, dateListener, year, month, day)
-                builder.show()
+        mCalendarView = findViewById(R.id.calendar)
+        mCalendarView.setOnDateChangeListener(object : CalendarView.OnDateChangeListener{
+            override fun onSelectedDayChange(
+                view: CalendarView,
+                year: Int,
+                month: Int,
+                dayOfMonth: Int
+            ) {
+                val choose_day = SimpleDateFormat("yyyy-MM-dd").parse("${year}-${month+1}-${dayOfMonth}")
+                viewat = SimpleDateFormat("yyyy-MM-dd").format(choose_day)
+                refreshList(viewat)
             }
-
-            dialog.setPositiveButton("추가") { DialogInterface, Int ->
-                if (foodName.text.isNotEmpty() && expirationAt.text.isNotEmpty()) {
-                    val food = Fridge()
-                    food.itemName = foodName.text.toString()
-                    food.expirationAt = expirationAt.text.toString()
-                    dbHandler.addFridge(food)
-                    refreshList()
-                }
-            }
-            dialog.setNegativeButton("취소") { DialogInterface, Int ->
-
-            }
-            dialog.show()
-        }
+        })
+        rv_calendar.layoutManager = LinearLayoutManager(this)
 
         val bottomNavigation : BottomNavigationView = findViewById(R.id.btm_nav)
-        bottomNavigation.selectedItemId =R.id.home
+        bottomNavigation.selectedItemId =R.id.calendar
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.calendar -> {
-                    startActivity(Intent(this, CalendarActivity::class.java))
+                R.id.home -> {
+                    startActivity(Intent(this, DashboardActivity::class.java))
+                    overridePendingTransition(
+                        R.anim.anim_slide_in_left,
+                        R.anim.anim_slide_out_right
+                    )
                     finish()
                 }
             }
             true
         }
 
+    }
+
+    override fun onResume(){
+        refreshList(viewat)
+        super.onResume()
+    }
+
+    private fun refreshList(day : String){
+        rv_calendar.adapter = CalendarAdapter(this, dbHandler.getFridgeDaybyDay(day), day)
     }
 
     fun updateFridge(fridge : Fridge){
@@ -114,7 +103,7 @@ class DashboardActivity : AppCompatActivity() {
                 fridge.itemName = foodName.text.toString()
                 fridge.expirationAt = expirationAt.text.toString()
                 dbHandler.updateFridge(fridge)
-                refreshList()
+                refreshList(viewat)
             }
         }
         dialog.setNegativeButton("취소") { DialogInterface, Int ->
@@ -123,16 +112,8 @@ class DashboardActivity : AppCompatActivity() {
         dialog.show()
 
     }
-    override fun onResume(){
-        refreshList()
-        super.onResume()
-    }
 
-    private fun refreshList(){
-        rv_dashboard.adapter = DashboardAdapter(this, dbHandler.getFridge())
-    }
-
-    class DashboardAdapter(val activity : DashboardActivity, val list : MutableList<Fridge>) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>(){
+    class CalendarAdapter(val activity : CalendarActivity, val list : MutableList<Fridge>, val viewat : String) : RecyclerView.Adapter<CalendarAdapter.ViewHolder>(){
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(LayoutInflater.from(activity).inflate(R.layout.show_list_fridge, parent, false))
         }
@@ -192,7 +173,7 @@ class DashboardActivity : AppCompatActivity() {
                             dialog.setMessage("정말로 삭제하시겠습니까?")
                             dialog.setPositiveButton("네, 삭제할래요") { DialogInterface, Int ->
                                 activity.dbHandler.deleteFridge(list[position].id)
-                                activity.refreshList()
+                                activity.refreshList(viewat)
                             }
                             dialog.setNegativeButton("아니오") { DialogInterface, Int ->
 
