@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">ManageFridge</string>
+    <string name="app_name">
+        냉장고\n
+        알리미
+    </string>
 
     <string name="edit">수정</string>
     <string name="delete">삭제</string>

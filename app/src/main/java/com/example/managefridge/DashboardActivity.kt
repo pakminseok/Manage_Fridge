@@ -136,25 +136,25 @@ class DashboardActivity : AppCompatActivity() {
 
             holder.fridgeExpirationAt.text = expirationAt
 
-            val remainDay = (Date().time-expirationDate.time) / (1000*60*60*24)
+            val remainDay = (Date().time-expirationDate.time) / (1000*60*60)
 
             when {
                 remainDay < 0 -> {
                     val absRemainDay = -remainDay
-                    if (absRemainDay <= 3)
+                    if (absRemainDay <= 72)
                     {
                         holder.itemView.setBackgroundColor(Color.rgb(169,16,22))
-                        holder.fridgeRemain.text = absRemainDay.toString()+"일 남음"
+                        holder.fridgeRemain.text = (absRemainDay/24+1).toString()+"일 남음"
                     }
                     else
                     {
                         holder.itemView.setBackgroundColor(Color.rgb(255,255,255))
-                        holder.fridgeRemain.text = absRemainDay.toString()+"일 남음"
+                        holder.fridgeRemain.text = (absRemainDay/24+1).toString()+"일 남음"
                     }
                 }
-                remainDay > 0 -> {
+                remainDay > 24 -> {
                     holder.itemView.setBackgroundColor(Color.rgb(36,36,36))
-                    holder.fridgeRemain.text = remainDay.toString()+"일 지남"
+                    holder.fridgeRemain.text = (remainDay/24).toString()+"일 지남"
                 }
                 else  -> {
                     holder.itemView.setBackgroundColor(Color.rgb(169,16,22))
