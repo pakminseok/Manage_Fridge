@@ -49,3 +49,5 @@ ToDo앱 기반.
 -달력에 원하는 일자를 선택한다.  
 -해당 일자에 유통기한인 식품들의 리스트를 볼 수 있다.(특정 일자의 식품만 보기)  
 ![calendarmode](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/CalendarView.png)
+![calendarmode](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DayView.png)
+
