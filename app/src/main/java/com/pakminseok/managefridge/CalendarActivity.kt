@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.pakminseok.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_calendar.*
 import java.text.SimpleDateFormat
@@ -23,6 +24,7 @@ class CalendarActivity : AppCompatActivity()
     lateinit var dbHandler: DBHandler
     lateinit var mCalendarView : CalendarView
     var viewat : String = SimpleDateFormat("yyyy-MM-dd").format(Date())
+    lateinit var dialogCalendar : BottomSheetDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +45,6 @@ class CalendarActivity : AppCompatActivity()
                 refreshList(viewat)
             }
         })
-        rv_calendar.layoutManager = LinearLayoutManager(this)
 
         val bottomNavigation : BottomNavigationView = findViewById(R.id.btm_nav)
         bottomNavigation.selectedItemId =R.id.calendar
@@ -63,13 +64,27 @@ class CalendarActivity : AppCompatActivity()
 
     }
 
-    override fun onResume(){
-        refreshList(viewat)
-        super.onResume()
-    }
-
     private fun refreshList(day : String){
-        rv_calendar.adapter = CalendarAdapter(this, dbHandler.getFridgeDaybyDay(day), day)
+        dialogCalendar = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.dialog_calendar, null)
+        val foodList = view.findViewById<RecyclerView>(R.id.rv_calendar)
+        foodList.layoutManager = LinearLayoutManager(this)
+        foodList.adapter = CalendarAdapter(this, dbHandler.getFridgeDaybyDay(day), day)
+
+        val close = view.findViewById<ImageView>(R.id.iv_close)
+        close.setOnClickListener {
+            dialogCalendar.dismiss()
+        }
+        dialogCalendar.setCancelable(false)
+        val todayDate = view.findViewById<TextView>(R.id.tv_calendar)
+        val dateText = SimpleDateFormat("yyyy-MM-dd").parse(day)
+        val cntOfToday = dbHandler.getFridgeCnt(day)
+        if(cntOfToday > 0)
+            todayDate.text = SimpleDateFormat("yyyy년MM월dd일").format(dateText) + " (" + cntOfToday.toString() +"건)"
+        else
+            todayDate.text = SimpleDateFormat("yyyy년MM월dd일").format(dateText) + " (없음)"
+        dialogCalendar.setContentView(view)
+        dialogCalendar.show()
     }
 
     fun updateFridge(fridge : Fridge){
@@ -103,6 +118,7 @@ class CalendarActivity : AppCompatActivity()
                 fridge.itemName = foodName.text.toString()
                 fridge.expirationAt = expirationAt.text.toString()
                 dbHandler.updateFridge(fridge)
+                dialogCalendar.dismiss()
                 refreshList(viewat)
             }
         }
@@ -173,6 +189,7 @@ class CalendarActivity : AppCompatActivity()
                             dialog.setMessage("정말로 삭제하시겠습니까?")
                             dialog.setPositiveButton("네, 삭제할래요") { DialogInterface, Int ->
                                 activity.dbHandler.deleteFridge(list[position].id)
+                                activity.dialogCalendar.dismiss()
                                 activity.refreshList(viewat)
                             }
                             dialog.setNegativeButton("아니오") { DialogInterface, Int ->

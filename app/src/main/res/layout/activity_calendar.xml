@@ -30,13 +30,7 @@
         android:id="@+id/calendar"
         android:layout_below="@id/calendar_toolbar"
         />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id = "@+id/rv_calendar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/calendar"
-        android:layout_above="@id/btm_nav"
-        />
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"

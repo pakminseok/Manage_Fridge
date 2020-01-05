@@ -84,4 +84,14 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         queryResult.close()
         return result
     }
+
+    fun getFridgeCnt(day: String) : Long {
+        val result : Long
+        val db : SQLiteDatabase = readableDatabase
+        val queryResult : Cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_FRIDGE WHERE $COL_EXPIRATION_AT = ?", arrayOf(day))
+        queryResult.moveToFirst()
+        result = queryResult.getLong(0)
+        queryResult.close()
+        return result
+    }
 }
