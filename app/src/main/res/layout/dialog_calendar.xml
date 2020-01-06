@@ -15,7 +15,7 @@
 
         <TextView
         android:id="@+id/tv_calendar"
-        android:textSize="25dp"
+        android:textSize="22dp"
         android:textAlignment="center"
         android:gravity="center_vertical"
         android:textColor="#FFFFFF"
