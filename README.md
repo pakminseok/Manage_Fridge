@@ -2,6 +2,8 @@
 식품의 유통기한을 메모하여, 못 먹고 버리는 재료/음식이 없도록 도와주는 앱. 주말마다 업데이트 예정.
 ToDo앱 기반.
 
+구글스토어- https://play.google.com/store/apps/details?id=com.pakminseok.managefridge
+
 ![initial](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/requirement.JPG)
   
   
