@@ -30,7 +30,18 @@
         android:id="@+id/calendar"
         android:layout_below="@id/calendar_toolbar"
         />
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_voice"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_above="@id/btm_nav"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src ="@drawable/ic_action_mic"
+        app:borderWidth="0dp"
+        app:maxImageSize="30dp"
+        android:backgroundTint="#258E25"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"

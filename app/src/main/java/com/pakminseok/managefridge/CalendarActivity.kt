@@ -1,23 +1,33 @@
 package com.pakminseok.managefridge
 
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.pakminseok.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_calendar.*
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.jar.Manifest
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class CalendarActivity : AppCompatActivity()
 {
@@ -25,6 +35,9 @@ class CalendarActivity : AppCompatActivity()
     lateinit var mCalendarView : CalendarView
     var viewat : String = SimpleDateFormat("yyyy-MM-dd").format(Date())
     lateinit var dialogCalendar : BottomSheetDialog
+
+    private val REQUEST_CODE_SPEECH_INPUT = 100
+    private val AUDIO_PERMISSION_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +75,165 @@ class CalendarActivity : AppCompatActivity()
             true
         }
 
+        fab_voice.setOnClickListener{
+            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                speak()
+            } else {
+                requestAudioPermission()
+            }
+        }
+    }
+    private fun requestAudioPermission(){
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECORD_AUDIO)) {
+            AlertDialog.Builder(this)
+                .setTitle("오디오 권한 설정")
+                .setMessage("음성인식 기능을 위해 권한 설정을 요청합니다.")
+                .setPositiveButton("동의합니다.") { dialog, id ->
+                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.RECORD_AUDIO), AUDIO_PERMISSION_CODE)
+                }
+                .setNegativeButton("거부합니다.") { dialog, id ->
+                    dialog.dismiss()
+                }
+                .create().show()
+        }else {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.RECORD_AUDIO), AUDIO_PERMISSION_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == AUDIO_PERMISSION_CODE){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "권한을 동의했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                Toast.makeText(this, "권한을 거부했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun speak()
+    {
+        val mIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        mIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
+        mIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN)
+        mIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "냉장고에 넣을 식품과 유통기한을 말해주세요")
+
+        try {
+            startActivityForResult(mIntent, REQUEST_CODE_SPEECH_INPUT)
+        }
+        catch (e : Exception){
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun addFridgeVoice(foodName : String, expirationAt : String)
+    {
+        val food = Fridge()
+        food.itemName = foodName
+        food.expirationAt = expirationAt
+        dbHandler.addFridge(food)
+        Toast.makeText(this, "냉장고에 식품을 넣었습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode){
+            REQUEST_CODE_SPEECH_INPUT -> {
+                if(resultCode == Activity.RESULT_OK && data != null){
+                    val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+
+                    var pattern : Pattern = Pattern.compile("(19|20)\\d{2}년 ([1-9]|1[0-2])월 ([1-9]|[1-2][0-9]|3[0-1])일")
+                    var matcher : Matcher = pattern.matcher(result[0])
+
+                    if(matcher.find()) {
+                        when (matcher.start()) {
+                            0 -> {
+                                Toast.makeText(this, "식품명을 말해주세요", Toast.LENGTH_SHORT).show()
+                                speak()
+                                return
+                            }
+                            else -> {
+                                val foodName : String = result[0].substring(0, matcher.start() - 1)
+
+                                val getExpiratoinAt = SimpleDateFormat("yyyy년 MM월 dd일").parse(
+                                    result[0].substring(
+                                        matcher.start(),
+                                        matcher.end()
+                                    )
+                                )
+                                val expirationAt : String = SimpleDateFormat("yyyy-MM-dd").format(getExpiratoinAt).toString()
+
+                                addFridgeVoice(foodName, expirationAt)
+                                return
+                            }
+                        }
+                    }
+
+                    pattern = Pattern.compile("\\d{2}년 ([1-9]|1[0-2])월 ([1-9]|[1-2][0-9]|3[0-1])일")
+                    matcher = pattern.matcher(result[0])
+                    if(matcher.find()) {
+                        when (matcher.start()) {
+                            0 -> {
+                                Toast.makeText(this, "식품명을 말해주세요", Toast.LENGTH_SHORT).show()
+                                speak()
+                                return
+                            }
+                            else -> {
+                                val foodName : String = result[0].substring(0, matcher.start() - 1)
+
+                                val getExpiratoinAt = SimpleDateFormat("yy년 MM월 dd일").parse(
+                                    result[0].substring(
+                                        matcher.start(),
+                                        matcher.end()
+                                    )
+                                )
+                                val expirationAt : String = SimpleDateFormat("yyyy-MM-dd").format(getExpiratoinAt).toString()
+
+                                addFridgeVoice(foodName, expirationAt)
+                                return
+                            }
+                        }
+                    }
+
+                    pattern = Pattern.compile("([1-9]|1[0-2])월 ([1-9]|[1-2][0-9]|3[0-1])일")
+                    matcher = pattern.matcher(result[0])
+                    if(matcher.find()) {
+                        when (matcher.start()) {
+                            0 -> {
+                                Toast.makeText(this, "식품명을 말해주세요", Toast.LENGTH_SHORT).show()
+                                speak()
+                                return
+                            }
+                            else -> {
+                                val foodName : String = result[0].substring(0, matcher.start() - 1)
+
+                                val getExpiratoinAt = SimpleDateFormat("MM월 dd일").parse(
+                                    result[0].substring(
+                                        matcher.start(),
+                                        matcher.end()
+                                    )
+                                )
+
+                                val year: String =
+                                    (Calendar.getInstance().get(Calendar.YEAR)).toString()
+                                val expirationAt : String = SimpleDateFormat("$year-MM-dd").format(getExpiratoinAt).toString()
+
+                                addFridgeVoice(foodName, expirationAt)
+                                return
+                            }
+                        }
+                    }
+
+                    Toast.makeText(this, "유통기한을 말해주세요", Toast.LENGTH_SHORT).show()
+                    speak()
+                }
+            }
+        }
     }
 
     private fun refreshList(day : String){
@@ -80,9 +252,9 @@ class CalendarActivity : AppCompatActivity()
         val dateText = SimpleDateFormat("yyyy-MM-dd").parse(day)
         val cntOfToday = dbHandler.getFridgeCnt(day)
         if(cntOfToday > 0)
-            todayDate.text = SimpleDateFormat("yyyy년MM월dd일").format(dateText) + " (" + cntOfToday.toString() +"건)"
+            todayDate.text = SimpleDateFormat("yyyy년MM월dd일").format(dateText) + " [ " + cntOfToday.toString() +"건 ] "
         else
-            todayDate.text = SimpleDateFormat("yyyy년MM월dd일").format(dateText) + " (없음)"
+            todayDate.text = SimpleDateFormat("yyyy년MM월dd일").format(dateText) + " [ 없음 ]"
         dialogCalendar.setContentView(view)
         dialogCalendar.show()
     }
@@ -119,6 +291,7 @@ class CalendarActivity : AppCompatActivity()
                 fridge.expirationAt = expirationAt.text.toString()
                 dbHandler.updateFridge(fridge)
                 dialogCalendar.dismiss()
+                Toast.makeText(this, "수정했습니다.", Toast.LENGTH_SHORT).show()
                 refreshList(viewat)
             }
         }
@@ -190,6 +363,7 @@ class CalendarActivity : AppCompatActivity()
                             dialog.setPositiveButton("네, 삭제할래요") { DialogInterface, Int ->
                                 activity.dbHandler.deleteFridge(list[position].id)
                                 activity.dialogCalendar.dismiss()
+                                Toast.makeText(activity, "삭제했습니다.", Toast.LENGTH_SHORT).show()
                                 activity.refreshList(viewat)
                             }
                             dialog.setNegativeButton("아니오") { DialogInterface, Int ->

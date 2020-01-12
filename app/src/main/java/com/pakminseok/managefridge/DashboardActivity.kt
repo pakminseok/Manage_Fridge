@@ -61,6 +61,10 @@ class DashboardActivity : AppCompatActivity() {
                     food.expirationAt = expirationAt.text.toString()
                     dbHandler.addFridge(food)
                     refreshList()
+                    Toast.makeText(this, "식품을 추가했습니다.", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(this, "식품명과 유통기한을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
                 }
             }
             dialog.setNegativeButton("취소") { DialogInterface, Int ->
@@ -114,6 +118,7 @@ class DashboardActivity : AppCompatActivity() {
                 fridge.itemName = foodName.text.toString()
                 fridge.expirationAt = expirationAt.text.toString()
                 dbHandler.updateFridge(fridge)
+                Toast.makeText(this, "수정했습니다.", Toast.LENGTH_SHORT).show()
                 refreshList()
             }
         }
@@ -192,6 +197,7 @@ class DashboardActivity : AppCompatActivity() {
                             dialog.setMessage("정말로 삭제하시겠습니까?")
                             dialog.setPositiveButton("네, 삭제할래요") { DialogInterface, Int ->
                                 activity.dbHandler.deleteFridge(list[position].id)
+                                Toast.makeText(activity, "삭제했습니다.", Toast.LENGTH_SHORT).show()
                                 activity.refreshList()
                             }
                             dialog.setNegativeButton("아니오") { DialogInterface, Int ->
