@@ -52,4 +52,10 @@ ToDo앱 기반.
 -해당 일자에 유통기한인 식품들의 리스트를 볼 수 있다.(특정 일자의 식품만 보기)  
 ![calendarmode](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/CalendarView.png)
 ![calendarmode](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DayView.png)
+  
+8. 음성 입력  
+-캘린더모드에서 사용 가능하다
+-마이크 버튼을 누르고, 식품명과 유통기한을 말하면 자동으로 데이터가 저장된다.   
+![calendarmode](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DayView.png)
+
 
