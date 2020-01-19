@@ -39,12 +39,12 @@ ToDo앱 기반.
 
 5. 수정하기  
 -식품명이나 유통기한을 수정할 수 있다.  
-![edit](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/EditItem.jpg)
+![edit](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/EditItem.png)
 
 6. 삭제하기  
 -메뉴 - 삭제를 누르면, 정말로 삭제할 지 한 번더 메시지를 보여준다.  
 -"네 삭제할래요"를 누르면 삭제, "아니오"를 누르면 작업 취소다.  
-![delete](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DeleteItem.jpg)
+![delete](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/DeleteItem.png)
 
 7. 캘린더 모드  
 -하단 네비 버튼 중 "일자별 보기"를 선택하면, 달력이 나온다.  
