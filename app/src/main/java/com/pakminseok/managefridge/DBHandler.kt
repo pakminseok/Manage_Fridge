@@ -94,4 +94,18 @@ class DBHandler(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null,
         queryResult.close()
         return result
     }
+
+    fun getItemNameDaybyDay(day: String) : ArrayList<String> {
+        val result : ArrayList<String> = ArrayList()
+        val db : SQLiteDatabase = readableDatabase
+        val queryResult : Cursor = db.rawQuery("SELECT * FROM $TABLE_FRIDGE WHERE $COL_EXPIRATION_AT = ? ORDER BY $COL_CREATED_AT asc", arrayOf(day))
+        if(queryResult.moveToFirst()){
+            do {
+                val foodName= queryResult.getString(queryResult.getColumnIndex(COL_NAME))
+                result.add(foodName)
+            } while (queryResult.moveToNext())
+        }
+        queryResult.close()
+        return result
+    }
 }
