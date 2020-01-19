@@ -2,19 +2,17 @@ package com.pakminseok.managefridge
 
 import android.app.Activity
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,29 +20,33 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.pakminseok.managefridge.DTO.Fridge
 import kotlinx.android.synthetic.main.activity_calendar.*
+import kotlinx.android.synthetic.main.activity_calendar.fab_dashboard
+import kotlinx.android.synthetic.main.activity_calendar.fab_keyboard_type
+import kotlinx.android.synthetic.main.activity_calendar.fab_voice_type
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.jar.Manifest
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class CalendarActivity : AppCompatActivity()
 {
-    lateinit var dbHandler: DBHandler
-    lateinit var mCalendarView : CalendarView
-    var viewat : String = SimpleDateFormat("yyyy-MM-dd").format(Date())
-    lateinit var dialogCalendar : BottomSheetDialog
+    private lateinit var dbHandler: DBHandler
+    private lateinit var permissionHandler : PermissionHandler
 
+    private var isOpen = false
     private val REQUEST_CODE_SPEECH_INPUT = 100
-    private val AUDIO_PERMISSION_CODE = 1
+    var viewat : String = SimpleDateFormat("yyyy-MM-dd").format(Date())
+
+    lateinit var mCalendarView : CalendarView
+    lateinit var dialogCalendar : BottomSheetDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
         setSupportActionBar(calendar_toolbar)
         dbHandler = DBHandler(this)
-
+        permissionHandler = PermissionHandler(this, this)
         mCalendarView = findViewById(R.id.calendar)
         mCalendarView.setOnDateChangeListener(object : CalendarView.OnDateChangeListener{
             override fun onSelectedDayChange(
@@ -75,46 +77,109 @@ class CalendarActivity : AppCompatActivity()
             true
         }
 
-        fab_voice.setOnClickListener{
-            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-                speak()
-            } else {
-                requestAudioPermission()
+        val fabOpen = AnimationUtils.loadAnimation(this, R.anim.fab_open)
+        val fabClose = AnimationUtils.loadAnimation(this, R.anim.fab_close)
+        val fabRClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise)
+        val fabRCointerClockwise = AnimationUtils.loadAnimation(this, R.anim.rotate_counter_clockwise)
+
+        fab_dashboard.setOnClickListener {
+            if(isOpen)
+            {
+                fab_keyboard_type.startAnimation(fabClose)
+                fab_voice_type.startAnimation(fabClose)
+                fab_dashboard.startAnimation(fabRClockwise)
+
+                fab_keyboard_type.isEnabled=false
+                fab_voice_type.isEnabled=false
+
+                isOpen = false
             }
-        }
-    }
-    private fun requestAudioPermission(){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECORD_AUDIO)) {
-            AlertDialog.Builder(this)
-                .setTitle("오디오 권한 설정")
-                .setMessage("음성인식 기능을 위해 권한 설정을 요청합니다.")
-                .setPositiveButton("동의합니다.") { dialog, id ->
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.RECORD_AUDIO), AUDIO_PERMISSION_CODE)
+
+            else {
+                fab_keyboard_type.startAnimation(fabOpen)
+                fab_voice_type.startAnimation(fabOpen)
+                fab_dashboard.startAnimation(fabRCointerClockwise)
+
+                fab_keyboard_type.isClickable = true
+                fab_voice_type.isClickable = true
+
+                isOpen = true
+            }
+
+            fab_voice_type.setOnClickListener {
+                if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                    speak()
+                } else {
+                    permissionHandler.requestAudioPermission()
                 }
-                .setNegativeButton("거부합니다.") { dialog, id ->
-                    dialog.dismiss()
+                fab_keyboard_type.startAnimation(fabClose)
+                fab_voice_type.startAnimation(fabClose)
+                fab_dashboard.startAnimation(fabRClockwise)
+
+                fab_keyboard_type.isClickable = false
+                fab_voice_type.isClickable = false
+
+                isOpen = false
+            }
+
+            fab_keyboard_type.setOnClickListener {
+                val dialog = AlertDialog.Builder(this)
+                dialog.setTitle("냉장고에 넣기")
+                val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
+                val foodName = view.findViewById<EditText>(R.id.ev_fridge)
+                val expirationAt = view.findViewById<TextView>(R.id.tv_expiration_at)
+
+                dialog.setView(view)
+
+                expirationAt.setOnClickListener {
+                    val c = Calendar.getInstance()
+                    val year = c.get(Calendar.YEAR)
+                    val month = c.get(Calendar.MONTH)
+                    val day = c.get(Calendar.DAY_OF_MONTH)
+
+                    val dateListener = object : DatePickerDialog.OnDateSetListener {
+                        override fun onDateSet(
+                            view: DatePicker?,
+                            year: Int,
+                            month: Int,
+                            dayOfMonth: Int
+                        ) {
+                            val expAt =
+                                SimpleDateFormat("yyyy-MM-dd").parse("${year}-${month + 1}-${dayOfMonth}")
+                            expirationAt.setText(SimpleDateFormat("yyyy-MM-dd").format(expAt).toString())
+                        }
+                    }
+                    val builder = DatePickerDialog(this, dateListener, year, month, day)
+                    builder.show()
                 }
-                .create().show()
-        }else {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.RECORD_AUDIO), AUDIO_PERMISSION_CODE)
+
+                dialog.setPositiveButton("추가") { DialogInterface, Int ->
+                    if (foodName.text.isNotEmpty() && expirationAt.text.isNotEmpty()) {
+                        val food = Fridge()
+                        food.itemName = foodName.text.toString()
+                        food.expirationAt = expirationAt.text.toString()
+                        dbHandler.addFridge(food)
+                        Toast.makeText(this, "식품을 추가했습니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "식품명과 유통기한을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                dialog.setNegativeButton("취소") { DialogInterface, Int ->
+
+                }
+                dialog.show()
+                fab_keyboard_type.startAnimation(fabClose)
+                fab_voice_type.startAnimation(fabClose)
+                fab_dashboard.startAnimation(fabRClockwise)
+
+                fab_keyboard_type.isClickable = false
+                fab_voice_type.isClickable = false
+
+                isOpen = false
+            }
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == AUDIO_PERMISSION_CODE){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "권한을 동의했습니다.", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                Toast.makeText(this, "권한을 거부했습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
     private fun speak()
     {
         val mIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -326,21 +391,21 @@ class CalendarActivity : AppCompatActivity()
                     val absRemainDay = -remainDay
                     if (absRemainDay <= 72)
                     {
-                        holder.itemView.setBackgroundColor(Color.rgb(169,16,22))
+                        holder.itemView.setBackgroundResource(R.drawable.item_radius_red)
                         holder.fridgeRemain.text = (absRemainDay/24+1).toString()+"일 남음"
                     }
                     else
                     {
-                        holder.itemView.setBackgroundColor(Color.rgb(255,255,255))
+                        holder.itemView.setBackgroundResource(R.drawable.item_radius_white)
                         holder.fridgeRemain.text = (absRemainDay/24+1).toString()+"일 남음"
                     }
                 }
                 remainDay > 24 -> {
-                    holder.itemView.setBackgroundColor(Color.rgb(36,36,36))
+                    holder.itemView.setBackgroundResource(R.drawable.item_radius_black)
                     holder.fridgeRemain.text = (remainDay/24).toString()+"일 지남"
                 }
                 else  -> {
-                    holder.itemView.setBackgroundColor(Color.rgb(169,16,22))
+                    holder.itemView.setBackgroundResource(R.drawable.item_radius_red)
                     holder.fridgeRemain.text = "오늘까지"
                 }
             }
