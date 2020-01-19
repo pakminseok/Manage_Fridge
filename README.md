@@ -30,7 +30,7 @@ ToDo앱 기반.
 -현재 작업을 취소하고 싶으면 "취소"버튼을 누른다.  
 -식품명, 유통기한 중 하나라도 입력을 안 하면, 추가되지 않는다.  
 ![Add](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/AddItem.png)
-![datepicker](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/ChooseExpirationDate.jpg)
+![datepicker](https://github.com/pakminseok/Manage_Fridge/blob/master/howToImage/ChooseExpirationDate.png)
 
 4. 편집 메뉴  
 -각 식품 목록의 우측에 메뉴버튼이 있다.  
